@@ -9,12 +9,35 @@ TESTS_DIR = "tests/"
 input_files = [f for f in glob.glob(os.path.join(TESTS_DIR, "input_*.txt")) 
                if "_expected_stdout" not in f]
 
+# Separate files into two lists
+low_inputs = []  # `input_0` to `input_9`
+high_inputs = []  # `input_10` and above
+
+for file in input_files:
+    # Extract the number portion from the filename
+    filename = os.path.basename(file)
+    try:
+        num = int(filename.split("_")[1].split(".")[0])  # Extract number from "input_X.txt"
+        if num < 10:
+            low_inputs.append(file)
+        else:
+            high_inputs.append(file)
+    except ValueError:
+        print(f"⚠️ Warning: Could not parse test number from {filename}")
+
+# Sort the lists numerically
+low_inputs.sort(key=lambda x: int(os.path.basename(x).split("_")[1].split(".")[0]))
+high_inputs.sort(key=lambda x: int(os.path.basename(x).split("_")[1].split(".")[0]))
+
+# Merge the sorted lists (low first, high last)
+sorted_input_files = low_inputs + high_inputs
+
 # Initialize counters
-total_tests = len(input_files)
+total_tests = len(sorted_input_files)
 passed_tests = 0
 
-# Iterate over each input file
-for input_file in input_files:
+# Iterate over sorted input files
+for input_file in sorted_input_files:
     # Construct expected output file name
     expected_output_file = input_file.replace(".txt", "_expected_stdout.txt")
 
