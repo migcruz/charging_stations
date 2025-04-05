@@ -6,7 +6,7 @@ def main():
 
     status = 0
     if len(sys.argv) < 2:
-        print("Usage: python script.py <file_path>")
+        print("Usage: python main.py <file_path>")
         sys.exit(1)
 
     file_path = sys.argv[1]
