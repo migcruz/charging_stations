@@ -1,0 +1,7 @@
+[Stations]
+1 1003
+2 1004
+
+[Charger Availability Reports]
+water 0 2000000 false
+1004 0 50000 true

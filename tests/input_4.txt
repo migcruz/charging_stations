@@ -1,0 +1,7 @@
+[Stations]
+1 1003
+2 1004
+
+[Charger Availability Reports]
+1003 cat dog false
+1004 0 50000 true
