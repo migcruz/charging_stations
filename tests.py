@@ -1,69 +1,196 @@
 import subprocess
 import os
-import glob
+import inspect
 
 # Path to the tests directory
 TESTS_DIR = "tests/"
 
-# Find all input files that match input_*.txt but **exclude** output files
-input_files = [f for f in glob.glob(os.path.join(TESTS_DIR, "input_*.txt")) 
-               if "_expected_stdout" not in f]
+def run_test(input_file, expected_output, test_name):
 
-# Separate files into two lists
-low_inputs = []  # `input_0` to `input_9`
-high_inputs = []  # `input_10` and above
+    merged_expected_output = "\n".join(expected_output)
 
-for file in input_files:
-    # Extract the number portion from the filename
-    filename = os.path.basename(file)
-    try:
-        num = int(filename.split("_")[1].split(".")[0])  # Extract number from "input_X.txt"
-        if num < 10:
-            low_inputs.append(file)
-        else:
-            high_inputs.append(file)
-    except ValueError:
-        print(f"⚠️ Warning: Could not parse test number from {filename}")
-
-# Sort the lists numerically
-low_inputs.sort(key=lambda x: int(os.path.basename(x).split("_")[1].split(".")[0]))
-high_inputs.sort(key=lambda x: int(os.path.basename(x).split("_")[1].split(".")[0]))
-
-# Merge the sorted lists (low first, high last)
-sorted_input_files = low_inputs + high_inputs
-
-# Initialize counters
-total_tests = len(sorted_input_files)
-passed_tests = 0
-
-# Iterate over sorted input files
-for input_file in sorted_input_files:
-    # Construct expected output file name
-    expected_output_file = input_file.replace(".txt", "_expected_stdout.txt")
-
-    # Check if the corresponding expected output file exists
-    if not os.path.exists(expected_output_file):
-        print(f"⚠️ Warning: Expected output file not found for {input_file}")
-        continue
+    test_path = os.path.join(TESTS_DIR, input_file)
 
     # Run the main.py script with the input file
-    result = subprocess.run(["python", "main.py", input_file], capture_output=True, text=True)
+    result = subprocess.run(["python", "main.py", test_path], capture_output=True, text=True)
     script_output = result.stdout.strip()
-
-    # Read expected output from file
-    with open(expected_output_file, "r") as file:
-        expected_output = file.read().strip()
-
     # Compare outputs
-    if script_output == expected_output:
-        print(f"✅ {input_file}: Match")
-        passed_tests += 1  # Increment the counter for passed tests
+    if script_output == merged_expected_output:
+        print(f"✅ {test_name}: Match")
+        return 0
     else:
-        print(f"❌ {input_file}: Mismatch")
+        print(f"❌ {test_name}: Mismatch")
         print("\nExpected Output:")
-        print(expected_output)
+        print(merged_expected_output)
         print("\nScript Output:")
         print(script_output)
+        return 1
+    
+# Define all the tests here
 
-# Print the total passed test cases at the end
-print(f"\n🎯 Total Passed Tests: {passed_tests}/{total_tests}")
+# Valid inputs
+def valid_input_1():
+
+    status = 0
+
+    expected_output = [
+        "0 100", 
+        "1 0", 
+        "2 75"
+    ]
+
+    status = run_test("input_1.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def valid_input_2():
+
+    status = 0
+
+    expected_output = [
+        "0 66", 
+        "1 100",
+    ]
+
+    status = run_test("input_2.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def valid_input_random_start_end_time():
+
+    status = 0
+
+    expected_output = [
+        "0 96", 
+        "1 0",
+        "2 75",
+    ]
+
+    status = run_test("input_7.txt", expected_output,inspect.currentframe().f_code.co_name)
+    return status
+
+def valid_input_no_availability():
+
+    status = 0
+
+    expected_output = [
+        "0 0", 
+        "1 0",
+        "2 0",
+    ]
+
+    status = run_test("input_8.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+# Invalid inputs
+def invalid_input_randomstring():
+
+    status = 0
+
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_3.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def invalid_input_bad_start_end_time():
+
+    status = 0
+
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_4.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def invalid_input_bad_report_chargerid():
+
+    status = 0
+
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_5.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def invalid_input_bad_charger_availability():
+
+    status = 0
+
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_6.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def invalid_input_start_biggerthan_end():
+
+    status = 0
+
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_9.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def invalid_input_missing_chargerid():
+
+    status = 0
+
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_10.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def invalid_input_bad_charger_report_title():
+
+    status = 0
+
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_11.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def invalid_input_bad_stations_title():
+
+    status = 0
+
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_12.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+def invalid_input_empty_input():
+
+    status = 0
+    expected_output = [
+        "ERROR",
+    ]
+
+    status = run_test("input_13.txt", expected_output, inspect.currentframe().f_code.co_name)
+    return status
+
+test_list = [
+    valid_input_1,
+    valid_input_2,
+    valid_input_random_start_end_time,
+    valid_input_no_availability,
+    invalid_input_randomstring,
+    invalid_input_bad_start_end_time,
+    invalid_input_bad_report_chargerid,
+    invalid_input_bad_charger_availability,
+    invalid_input_start_biggerthan_end,
+    invalid_input_missing_chargerid,
+    invalid_input_bad_charger_report_title,
+    invalid_input_bad_stations_title,
+    invalid_input_empty_input,
+]
