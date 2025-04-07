@@ -4,8 +4,6 @@ from station_chargers import Station, Charger
 stations_dict = {}  # Dictionary to store station objects
 chargers_dict = {}  # Dictionary to store charger objects
 
-charger_reports = []  # List to store charger availability reports
-
 def process_charger_availailbity_reports(charger_report):
 
     status = 0
@@ -112,17 +110,14 @@ def parse_file(file_path):
                     return 1
                 
             elif section == "chargers":
-                charger_reports.append(line)  # Store full report as a string
+                status = process_charger_availailbity_reports(line)
+                if status:
+                    return status
     
     # If any of the data structures are empty, error out
-    if not charger_reports or not stations_dict or not chargers_dict:
+    if not stations_dict or not chargers_dict:
         print("ERROR")
         return 1
-
-    for report in charger_reports:
-        status = process_charger_availailbity_reports(report)
-        if status:
-            return status
 
     # Print to stdout
     for station_id, station_obj in stations_dict.items():
